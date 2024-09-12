@@ -17,11 +17,15 @@ const ImageEditor = ({ imageSrc, onReset }) => {
       const originalWidth = img.width;
       const originalHeight = img.height;
   
-      // Calculate border thickness based on the width of the image
+      // Maintain aspect ratio calculation
+      const targetAspectRatio = xScale / yScale;
+      const currentAspectRatio = originalWidth / originalHeight;
+  
+      // Border thickness calculation (percentage of image width)
       const borderThickness = Math.round(originalWidth * (inBetweenBorderPercnt / 100));
       const totalBorderThickness = includeBorder ? borderThickness : 0;
   
-      // First, create a canvas for the image with border
+      // Create canvas for the image with the optional border
       const borderedCanvas = document.createElement('canvas');
       borderedCanvas.width = originalWidth + (2 * totalBorderThickness);
       borderedCanvas.height = originalHeight + (2 * totalBorderThickness);
@@ -33,7 +37,7 @@ const ImageEditor = ({ imageSrc, onReset }) => {
         borderedCtx.fillRect(0, 0, borderedCanvas.width, borderedCanvas.height);
       }
   
-      // Draw original image on top of border
+      // Draw the original image inside the bordered canvas
       borderedCtx.drawImage(
         img, 
         totalBorderThickness, 
@@ -42,28 +46,43 @@ const ImageEditor = ({ imageSrc, onReset }) => {
         originalHeight
       );
   
-      // Now, create the final canvas with padding
+      // Adjust padding for aspect ratio
+      let finalWidth = originalWidth * xScale;
+      let finalHeight = originalHeight * yScale;
+  
+      // If the current aspect ratio doesn't match the target, adjust accordingly
+      if (currentAspectRatio !== targetAspectRatio) {
+        if (currentAspectRatio > targetAspectRatio) {
+          // Image is wider, adjust height
+          finalHeight = finalWidth / targetAspectRatio;
+        } else {
+          // Image is taller, adjust width
+          finalWidth = finalHeight * targetAspectRatio;
+        }
+      }
+  
+      // Now, create the final canvas with padding and scaled dimensions
       const finalCanvas = document.createElement('canvas');
-      finalCanvas.width = originalWidth * xScale + (2 * totalBorderThickness);
-      finalCanvas.height = originalHeight * yScale + (2 * totalBorderThickness);
+      finalCanvas.width = finalWidth + (2 * totalBorderThickness);
+      finalCanvas.height = finalHeight + (2 * totalBorderThickness);
       const finalCtx = finalCanvas.getContext('2d');
   
-      // Fill background
+      // Fill the background with padding color
       finalCtx.fillStyle = paddingColor;
       finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
   
-      // Calculate position to center the bordered image
+      // Calculate position to center the bordered image within the final canvas
       const xOffset = (finalCanvas.width - borderedCanvas.width) / 2;
       const yOffset = (finalCanvas.height - borderedCanvas.height) / 2;
   
-      // Draw bordered image centered on the final canvas
+      // Draw the bordered image centered in the final canvas
       finalCtx.drawImage(
         borderedCanvas,
         xOffset,
         yOffset
       );
   
-      // Set the new image source
+      // Set the new scaled image source
       setScaledImageSrc(finalCanvas.toDataURL());
     };
   };
