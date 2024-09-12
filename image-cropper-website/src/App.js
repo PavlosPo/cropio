@@ -1,8 +1,6 @@
-// import logo from './logo.svg';
 import React, { useState, useEffect } from 'react';
 import ImageEditor from './ImageEditor'; // Import the new component
 import './App.css';
-
 
 function App() {
   const [imageSrc, setImageSrc] = useState(null);
@@ -15,27 +13,37 @@ function App() {
     }
   }, []);
 
-  const ImageCropper = ({ imageSrc }) => {
-    return imageSrc ? <img src={imageSrc} alt="To be cropped" /> : null;
-  };
-
+  // Handle the file upload and image processing using a Web Worker
   const onUpload = () => {
     console.log('onUpload');
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
+    
     input.onchange = (event) => {
       const file = event.target.files[0];
+      
       if (file) {
+        const worker = new Worker(new URL('./imageWorker.js', import.meta.url));
+        
+        // Read the image as an ArrayBuffer and send it to the worker
         const reader = new FileReader();
+        
         reader.onload = (e) => {
-          const imageData = e.target.result;
-          setImageSrc(imageData); // Store image data in the state
-          localStorage.setItem('uploadedImage', imageData); // Save image in localStorage
+          const arrayBuffer = e.target.result;
+          worker.postMessage({ arrayBuffer, type: file.type });
+          
+          worker.onmessage = (event) => {
+            const { resizedImage } = event.data;
+            setImageSrc(resizedImage); // Set the processed image
+            localStorage.setItem('uploadedImage', resizedImage); // Save image in localStorage
+          };
         };
-        reader.readAsDataURL(file);
+        
+        reader.readAsArrayBuffer(file);
       }
     };
+    
     input.click();
   };
 
