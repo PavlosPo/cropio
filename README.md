@@ -1,0 +1,1 @@
+This is an application responsible for uploading and downloading rescaled photos. Made from Photographer to Photographers
