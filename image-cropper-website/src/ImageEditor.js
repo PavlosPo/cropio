@@ -7,7 +7,9 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   const [paddingColor, setPaddingColor] = useState('white');
   const [borderColor, setBorderColor] = useState('black');
   const [inBetweenBorderPercnt, setBorderThickness] = useState(3); // Default 3%
-  const [includeBorder, setIncludeBorder] = useState(false);
+  // const [includeBorder, setIncludeBorder] = useState(false);
+  const [extraPadding, setExtraPadding] = useState(30); // First stage padding in pixels
+  const [includeExtraBorder, setIncludeExtraBorder] = useState(false); // Second stage border option
 
   const onReshapeScaling = () => {
     const img = new Image();
@@ -19,78 +21,77 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   
       // Maintain aspect ratio calculation
       const targetAspectRatio = xScale / yScale;
-      const currentAspectRatio = originalWidth / originalHeight;
+      let currentAspectRatio = originalWidth / originalHeight;
   
-      // Border thickness calculation (percentage of image width)
-      const borderThickness = Math.round(originalWidth * (inBetweenBorderPercnt / 100));
-      const totalBorderThickness = includeBorder ? borderThickness : 0;
-  
-      // Create canvas for the image with the optional border
+      // First stage: Add extra padding of specified pixels
       const borderedCanvas = document.createElement('canvas');
-      borderedCanvas.width = originalWidth + (2 * totalBorderThickness);
-      borderedCanvas.height = originalHeight + (2 * totalBorderThickness);
+      const extraPaddingCanvasWidth = originalWidth + (2 * extraPadding);
+      const extraPaddingCanvasHeight = originalHeight + (2 * extraPadding);
+      borderedCanvas.width = extraPaddingCanvasWidth;
+      borderedCanvas.height = extraPaddingCanvasHeight;
       const borderedCtx = borderedCanvas.getContext('2d');
   
-      // Draw border if included
-      if (includeBorder) {
-        borderedCtx.fillStyle = borderColor;
-        borderedCtx.fillRect(0, 0, borderedCanvas.width, borderedCanvas.height);
+      borderedCtx.fillStyle = borderColor;
+      borderedCtx.fillRect(0, 0, extraPaddingCanvasWidth, extraPaddingCanvasHeight);
+      borderedCtx.drawImage(img, extraPadding, extraPadding, originalWidth, originalHeight);
+  
+      // Second stage: Optionally add in-between border
+      let canvasWithBorder = borderedCanvas;
+      let borderThickness = 0;  // Initialize to zero if not applied
+      if (includeExtraBorder) {
+        borderThickness = Math.round((extraPaddingCanvasWidth * inBetweenBorderPercnt) / 100); // Adjust to canvas width
+        const borderCanvas = document.createElement('canvas');
+        borderCanvas.width = canvasWithBorder.width + (2 * borderThickness);
+        borderCanvas.height = canvasWithBorder.height + (2 * borderThickness);
+        const borderCtx = borderCanvas.getContext('2d');
+  
+        // Same color for the second and third stages
+        borderCtx.fillStyle = paddingColor;
+        borderCtx.fillRect(0, 0, borderCanvas.width, borderCanvas.height);
+  
+        // Draw the image with the first padding on the new canvas with border
+        borderCtx.drawImage(canvasWithBorder, borderThickness, borderThickness);
+  
+        canvasWithBorder = borderCanvas; // Update the reference for next step
+  
+        // Update the current aspect ratio after adding the in-between border
+        currentAspectRatio = canvasWithBorder.width / canvasWithBorder.height;
       }
   
-      // Draw the original image inside the bordered canvas
-      borderedCtx.drawImage(
-        img, 
-        totalBorderThickness, 
-        totalBorderThickness, 
-        originalWidth, 
-        originalHeight
-      );
+      // Third stage: Adjust padding for aspect ratio and final scaling
+      let finalWidth = canvasWithBorder.width * xScale;
+      let finalHeight = canvasWithBorder.height * yScale;
   
-      // Adjust padding for aspect ratio
-      let finalWidth = originalWidth * xScale;
-      let finalHeight = originalHeight * yScale;
-  
-      // If the current aspect ratio doesn't match the target, adjust accordingly
+      // Adjust the dimensions based on the target aspect ratio
       if (currentAspectRatio !== targetAspectRatio) {
         if (currentAspectRatio > targetAspectRatio) {
-          // Image is wider, adjust height
           finalHeight = finalWidth / targetAspectRatio;
         } else {
-          // Image is taller, adjust width
           finalWidth = finalHeight * targetAspectRatio;
         }
       }
   
-      // Now, create the final canvas with padding and scaled dimensions
       const finalCanvas = document.createElement('canvas');
-      finalCanvas.width = finalWidth + (2 * totalBorderThickness);
-      finalCanvas.height = finalHeight + (2 * totalBorderThickness);
+      finalCanvas.width = finalWidth;
+      finalCanvas.height = finalHeight;
       const finalCtx = finalCanvas.getContext('2d');
   
-      // Fill the background with padding color
       finalCtx.fillStyle = paddingColor;
       finalCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
   
-      // Calculate position to center the bordered image within the final canvas
-      const xOffset = (finalCanvas.width - borderedCanvas.width) / 2;
-      const yOffset = (finalCanvas.height - borderedCanvas.height) / 2;
+      const xOffset = (finalCanvas.width - canvasWithBorder.width) / 2;
+      const yOffset = (finalCanvas.height - canvasWithBorder.height) / 2;
+      finalCtx.drawImage(canvasWithBorder, xOffset, yOffset);
   
-      // Draw the bordered image centered in the final canvas
-      finalCtx.drawImage(
-        borderedCanvas,
-        xOffset,
-        yOffset
-      );
-  
-      // Set the new scaled image source
-      setScaledImageSrc(finalCanvas.toDataURL());
+      // Save final image
+      setScaledImageSrc(finalCanvas.toDataURL('image/jpeg', 1.0)); // Max quality for JPEG
     };
   };
 
   const onSave = () => {
     const link = document.createElement('a');
     link.href = scaledImageSrc || imageSrc;
-    link.download = 'edited_image.png';
+    link.download = 'edited_image.jpg';
     link.click();
   };
 
@@ -102,6 +103,7 @@ const ImageEditor = ({ imageSrc, onReset }) => {
         <img src={scaledImageSrc || imageSrc} alt="To be edited" style={{ maxWidth: '100%', }} />
       </div>
 
+      {/* Scale input */}
       <div style={{ marginBottom: '20px' }}>
         <label>
           X Scale:
@@ -127,6 +129,50 @@ const ImageEditor = ({ imageSrc, onReset }) => {
         </label>
       </div>
 
+      {/* First stage padding input */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          Extra Padding (px):
+          <input
+            type="number"
+            value={extraPadding}
+            onChange={(e) => setExtraPadding(Number(e.target.value))}
+            style={{ margin: '0 10px', width: '60px' }}
+            min="0"
+          />
+        </label>
+      </div>
+
+      {/* In-between border option */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          Include In-between Border:
+          <input
+            type="checkbox"
+            checked={includeExtraBorder}
+            onChange={() => setIncludeExtraBorder(!includeExtraBorder)}
+            style={{ margin: '0 10px' }}
+          />
+        </label>
+
+        {includeExtraBorder && (
+          <>
+            <label>
+              Border Percentage (%):
+              <input
+                type="number"
+                value={inBetweenBorderPercnt}
+                onChange={(e) => setBorderThickness(Number(e.target.value))}
+                style={{ margin: '0 10px', width: '60px' }}
+                min="0"
+                max="100"
+              />
+            </label>
+          </>
+        )}
+      </div>
+
+      {/* Color selectors */}
       <div style={{ marginBottom: '20px' }}>
         <label>
           Padding Color:
@@ -139,55 +185,17 @@ const ImageEditor = ({ imageSrc, onReset }) => {
             <option value="black">Black</option>
           </select>
         </label>
-      </div>
-
-      <div style={{ marginBottom: '20px' }}>
         <label>
-          Include Border:
-          <input
-            type="checkbox"
-            checked={includeBorder}
-            onChange={() => setIncludeBorder(!includeBorder)}
+          Border Color (First stage):
+          <select
+            value={borderColor}
+            onChange={(e) => setBorderColor(e.target.value)}
             style={{ margin: '0 10px' }}
-          />
+          >
+            <option value="white">White</option>
+            <option value="black">Black</option>
+          </select>
         </label>
-
-        {includeBorder && (
-          <>
-            <label>
-              Border Color:
-              <select
-                value={borderColor}
-                onChange={(e) => setBorderColor(e.target.value)}
-                style={{ margin: '0 10px' }}
-              >
-                <option value="white">White</option>
-                <option value="black">Black</option>
-              </select>
-            </label>
-            <label>
-              Border Percentage (%):
-              <input
-                type="number"
-                value={inBetweenBorderPercnt}
-                onChange={(e) => setBorderThickness(Number(e.target.value))}
-                style={{ margin: '0 10px', width: '60px' }}
-                min="0"
-                max="100"
-              />
-            </label>
-            {/* <label>
-              Fixed Border (px):
-              <input
-                type="number"
-                value={fixedBorderPixels}
-                onChange={(e) => setFixedBorderPixels(Number(e.target.value))}
-                style={{ margin: '0 10px', width: '60px' }}
-                min="0"
-              />
-            </label> */}
-          </>
-        )}
       </div>
 
       <div>
