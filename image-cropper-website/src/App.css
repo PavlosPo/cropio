@@ -36,3 +36,17 @@
     transform: rotate(360deg);
   }
 }
+
+.image-container {
+  margin-bottom: 20px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  max-width: 800px;
+  max-height: 800px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  position: relative;
+  box-sizing: border-box;
+}

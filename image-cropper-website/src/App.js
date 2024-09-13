@@ -58,7 +58,9 @@ function App() {
       <p>Start editing to see some magic happen :)</p>
       {/* If an image is uploaded, show the ImageEditor component */}
       {imageSrc ? (
-        <ImageEditor imageSrc={imageSrc} onReset={onReset} />
+        <div style={{ width: '1200px', height: '1200px', position: 'relative', border: '1px solid black', boxSizing: 'border-box' }}>
+          <ImageEditor imageSrc={imageSrc} onReset={onReset} />
+        </div>
       ) : (
         <>
           <button onClick={onUpload}>Upload</button>
