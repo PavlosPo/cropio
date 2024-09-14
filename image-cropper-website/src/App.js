@@ -53,20 +53,23 @@ function App() {
   };
 
   return (
-    <>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
       <h1>Hello Image Cropper</h1>
       <p>Start editing to see some magic happen :)</p>
       {/* If an image is uploaded, show the ImageEditor component */}
+      <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', padding: '20px' }}>
       {imageSrc ? (
-        <div style={{ width: '1200px', height: '1200px', position: 'relative', border: '1px solid black', boxSizing: 'border-box' }}>
+        <div style={{ display: 'flex', width: '70%', height: '70%', position: 'relative', border: '1px solid black', boxSizing: 'border-box' , justifyContent: 'center' }}>
           <ImageEditor imageSrc={imageSrc} onReset={onReset} />
         </div>
+        
       ) : (
         <>
           <button onClick={onUpload}>Upload</button>
         </>
       )}
-    </>
+      </div>
+    </div>
   );
 }
 
