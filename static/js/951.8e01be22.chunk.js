@@ -1,0 +1,2 @@
+onmessage=async e=>{const{arrayBuffer:a,type:t,maxDimension:s=6e3}=e.data;try{const e=new Blob([a],{type:t}),o=await createImageBitmap(e),r=Math.max(s/o.width,s/o.height,1),n=Math.floor(o.width*r),c=Math.floor(o.height*r),g=new OffscreenCanvas(n,c);g.getContext("2d").drawImage(o,0,0,n,c);const h=await g.convertToBlob(),i=URL.createObjectURL(h);postMessage({resizedImageUrl:i})}catch(o){postMessage({error:o.message})}};
+//# sourceMappingURL=951.8e01be22.chunk.js.map
