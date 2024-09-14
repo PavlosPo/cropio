@@ -1,10 +1,15 @@
 {
+  "homepage": "https://PavlosPo.github.io/cropio",
   "name": "cropio_app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "webpack-dev-server --mode development --open",
+    "build": "webpack --mode production",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +18,7 @@
     "cropperjs": "^1.6.2"
   },
   "devDependencies": {
+    "gh-pages": "^6.1.1",
     "http-server": "^14.1.1"
   }
 }
