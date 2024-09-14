@@ -11,7 +11,10 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   const [extraPadding, setExtraPadding] = useState(30); // First stage padding in pixels
   const [includeExtraBorder, setIncludeExtraBorder] = useState(false); // Second stage border option
 
+  
+
   const onReshapeScaling = () => {
+
     const img = new Image();
     img.src = imageSrc;
   
@@ -19,9 +22,12 @@ const ImageEditor = ({ imageSrc, onReset }) => {
       const originalWidth = img.width;
       const originalHeight = img.height;
   
-      // Maintain aspect ratio calculation
-      const targetAspectRatio = xScale / yScale;
-      let currentAspectRatio = originalWidth / originalHeight;
+      // Normalize the aspect ratio
+      const gcd = (a, b) => (b === 0 ? a : gcd(b, a % b));
+      const divisor = gcd(xScale, yScale);
+      const normalizedXScale = xScale / divisor;
+      const normalizedYScale = yScale / divisor;
+      const targetAspectRatio = normalizedXScale / normalizedYScale;
   
       // First stage: Add extra padding of specified pixels
       const borderedCanvas = document.createElement('canvas');
@@ -37,38 +43,33 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   
       // Second stage: Optionally add in-between border
       let canvasWithBorder = borderedCanvas;
-      let borderThickness = 0;  // Initialize to zero if not applied
+      let borderThickness = 0;
       if (includeExtraBorder) {
-        borderThickness = Math.round((extraPaddingCanvasWidth * inBetweenBorderPercnt) / 100); // Adjust to canvas width
+        borderThickness = Math.round((extraPaddingCanvasWidth * inBetweenBorderPercnt) / 100);
         const borderCanvas = document.createElement('canvas');
         borderCanvas.width = canvasWithBorder.width + (2 * borderThickness);
         borderCanvas.height = canvasWithBorder.height + (2 * borderThickness);
         const borderCtx = borderCanvas.getContext('2d');
   
-        // Same color for the second and third stages
         borderCtx.fillStyle = paddingColor;
         borderCtx.fillRect(0, 0, borderCanvas.width, borderCanvas.height);
   
-        // Draw the image with the first padding on the new canvas with border
         borderCtx.drawImage(canvasWithBorder, borderThickness, borderThickness);
   
-        canvasWithBorder = borderCanvas; // Update the reference for next step
-  
-        // Update the current aspect ratio after adding the in-between border
-        currentAspectRatio = canvasWithBorder.width / canvasWithBorder.height;
+        canvasWithBorder = borderCanvas;
       }
   
       // Third stage: Adjust padding for aspect ratio and final scaling
-      let finalWidth = canvasWithBorder.width * xScale;
-      let finalHeight = canvasWithBorder.height * yScale;
+      let finalWidth, finalHeight;
   
       // Adjust the dimensions based on the target aspect ratio
-      if (currentAspectRatio !== targetAspectRatio) {
-        if (currentAspectRatio > targetAspectRatio) {
-          finalHeight = finalWidth / targetAspectRatio;
-        } else {
-          finalWidth = finalHeight * targetAspectRatio;
-        }
+      const currentAspectRatio = canvasWithBorder.width / canvasWithBorder.height;
+      if (currentAspectRatio > targetAspectRatio) {
+        finalWidth = canvasWithBorder.width;
+        finalHeight = finalWidth / targetAspectRatio;
+      } else {
+        finalHeight = canvasWithBorder.height;
+        finalWidth = finalHeight * targetAspectRatio;
       }
   
       const finalCanvas = document.createElement('canvas');
@@ -86,7 +87,7 @@ const ImageEditor = ({ imageSrc, onReset }) => {
       // Save final image
       setScaledImageSrc(finalCanvas.toDataURL('image/jpeg', 1.0)); // Max quality for JPEG
     };
-  };
+};
 
   const onSave = () => {
     const link = document.createElement('a');
