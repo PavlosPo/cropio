@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/PavlosPo/cropio/static/css/main.1541aaa0.css",
+    "main.js": "/PavlosPo/cropio/static/js/main.a917ce7e.js",
+    "static/js/951.f7586f0c.chunk.js": "/PavlosPo/cropio/static/js/951.f7586f0c.chunk.js",
+    "static/js/453.44bc516d.chunk.js": "/PavlosPo/cropio/static/js/453.44bc516d.chunk.js",
+    "index.html": "/PavlosPo/cropio/index.html",
+    "main.1541aaa0.css.map": "/PavlosPo/cropio/static/css/main.1541aaa0.css.map",
+    "main.a917ce7e.js.map": "/PavlosPo/cropio/static/js/main.a917ce7e.js.map",
+    "951.f7586f0c.chunk.js.map": "/PavlosPo/cropio/static/js/951.f7586f0c.chunk.js.map",
+    "453.44bc516d.chunk.js.map": "/PavlosPo/cropio/static/js/453.44bc516d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1541aaa0.css",
+    "static/js/main.a917ce7e.js"
+  ]
+}
