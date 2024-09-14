@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Loading from './Loading'; // Import the Loading component
 
 const ImageEditor = ({ imageSrc, onReset }) => {
   const [xScale, setXScale] = useState(1);
@@ -10,11 +11,10 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   // const [includeBorder, setIncludeBorder] = useState(false);
   const [extraPadding, setExtraPadding] = useState(30); // First stage padding in pixels
   const [includeExtraBorder, setIncludeExtraBorder] = useState(false); // Second stage border option
-
-  
+  const [isLoading, setIsLoading] = useState(false); // State to track loading
 
   const onReshapeScaling = () => {
-
+    setIsLoading(true); // Show loading spinner
     const img = new Image();
     img.src = imageSrc;
   
@@ -85,9 +85,11 @@ const ImageEditor = ({ imageSrc, onReset }) => {
       finalCtx.drawImage(canvasWithBorder, xOffset, yOffset);
   
       // Save final image
-      setScaledImageSrc(finalCanvas.toDataURL('image/jpeg', 1.0)); // Max quality for JPEG
+      const quality = 0.8; // Adjust the quality parameter as needed (0.1 to 1.0)
+      setScaledImageSrc(finalCanvas.toDataURL('image/jpeg', quality)); // Max quality for JPEG
+      setIsLoading(false); // Hide loading spinner
     };
-};
+  };
 
   const onSave = () => {
     const link = document.createElement('a');
@@ -98,8 +100,8 @@ const ImageEditor = ({ imageSrc, onReset }) => {
 
   return (
       <div style={{ textAlign: 'center', padding: '20px' }}>
+        {isLoading && <Loading />} {/* Show the loading spinner if isLoading is true */}
         <h2>Image Editor</h2>
-
         <div className = "image-container">
             <img src={scaledImageSrc || imageSrc} alt="To be edited" style={{maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',}}/>  
         </div>

@@ -1,33 +1,36 @@
 onmessage = async (e) => {
-  const { arrayBuffer, type } = e.data;
-  
-  // Create a Blob from the received ArrayBuffer
-  const blob = new Blob([arrayBuffer], { type });
-  
-  // Use createImageBitmap, which is available in workers, to handle images
-  const imgBitmap = await createImageBitmap(blob);
+  const { arrayBuffer, type, maxDimension = 2000 } = e.data;
 
-  // Create an OffscreenCanvas to manipulate the image
-  const canvas = new OffscreenCanvas(imgBitmap.width, imgBitmap.height);
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(imgBitmap, 0, 0);
+  try {
+    // Create a Blob from the received ArrayBuffer
+    const blob = new Blob([arrayBuffer], { type });
 
-  // Rescale or manipulate the image
-  const maxDimension = 2000; // Example resizing logic
-  const newWidth = imgBitmap.width > imgBitmap.height ? maxDimension : (imgBitmap.width * maxDimension) / imgBitmap.height;
-  const newHeight = imgBitmap.height > imgBitmap.width ? maxDimension : (imgBitmap.height * maxDimension) / imgBitmap.width;
+    // Use createImageBitmap, which is available in workers, to handle images
+    const imgBitmap = await createImageBitmap(blob);
 
-  const targetCanvas = new OffscreenCanvas(newWidth, newHeight);
-  const targetCtx = targetCanvas.getContext('2d');
-  targetCtx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
+    // Determine scaling factors
+    const scaleUpFactor = Math.max(
+      maxDimension / imgBitmap.width,
+      maxDimension / imgBitmap.height,
+      1 // Ensure it scales up if smaller than maxDimension
+    );
 
-  // Convert the canvas to a Blob and send it back to the main thread as a Data URL
-  const resizedBlob = await targetCanvas.convertToBlob();
-  
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    postMessage({ resizedImage: reader.result });
-  };
+    const newWidth = Math.floor(imgBitmap.width * scaleUpFactor);
+    const newHeight = Math.floor(imgBitmap.height * scaleUpFactor);
 
-  reader.readAsDataURL(resizedBlob); // Convert Blob to Data URL
+    // Create an OffscreenCanvas to manipulate the image
+    const targetCanvas = new OffscreenCanvas(newWidth, newHeight);
+    const targetCtx = targetCanvas.getContext('2d');
+    targetCtx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
+
+    // Convert the canvas to a Blob and send it back to the main thread as a Blob URL
+    const resizedBlob = await targetCanvas.convertToBlob();
+    
+    // Create a blob URL and send it back to the main thread
+    const blobUrl = URL.createObjectURL(resizedBlob);
+    postMessage({ resizedImageUrl: blobUrl });
+  } catch (error) {
+    // Send an error message back to the main thread if something goes wrong
+    postMessage({ error: error.message });
+  }
 };
