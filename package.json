@@ -1,21 +1,24 @@
 {
-  "homepage": "https://PavlosPo.github.io/cropio",
+  "homepage": "http://PavlosPo.github.io/cropio",
   "name": "cropio_app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d build",
+    "build": "react-scripts build",
+    "test": "react-scripts test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cropperjs": "^1.6.2"
+    "cropperjs": "^1.6.2",
+    "react-scripts": "^5.0.1",
+    "gh-pages": "^6.1.1",
+    "http-server": "^14.1.1"
   },
   "devDependencies": {
     "gh-pages": "^6.1.1",
