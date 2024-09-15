@@ -1,17 +1,17 @@
 {
   "files": {
     "main.css": "/cropio/static/css/main.39fa4ebb.css",
-    "main.js": "/cropio/static/js/main.5a2e3b08.js",
+    "main.js": "/cropio/static/js/main.374b11ab.js",
     "static/js/951.c0e6dbfd.chunk.js": "/cropio/static/js/951.c0e6dbfd.chunk.js",
     "static/js/453.44bc516d.chunk.js": "/cropio/static/js/453.44bc516d.chunk.js",
     "index.html": "/cropio/index.html",
     "main.39fa4ebb.css.map": "/cropio/static/css/main.39fa4ebb.css.map",
-    "main.5a2e3b08.js.map": "/cropio/static/js/main.5a2e3b08.js.map",
+    "main.374b11ab.js.map": "/cropio/static/js/main.374b11ab.js.map",
     "951.c0e6dbfd.chunk.js.map": "/cropio/static/js/951.c0e6dbfd.chunk.js.map",
     "453.44bc516d.chunk.js.map": "/cropio/static/js/453.44bc516d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.39fa4ebb.css",
-    "static/js/main.5a2e3b08.js"
+    "static/js/main.374b11ab.js"
   ]
 }
