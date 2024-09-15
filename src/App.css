@@ -50,3 +50,19 @@
   position: relative;
   box-sizing: border-box;
 }
+
+p {
+  /* make the text black */
+  color: black;
+  /* center the text */
+  text-align: center;
+  /* make the text smaller */
+  font-size: 1.1em;
+  /* change the font family  */
+  font-family: 'Times New Roman', Times, serif;
+  /* center the text vertically */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}

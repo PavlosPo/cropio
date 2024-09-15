@@ -26,8 +26,10 @@ function App() {
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
-      <h1>Hello Image Cropper</h1>
+    <div style={{ textAlign: 'center', padding: '20px' , }}>
+      <h1>Hello There !!</h1>
+      <h2>Welcome to the Image Editor App</h2>
+      <p>Upload an image to get it edited in the rescaling factor you desire by adding profesionally looking padding 😎</p>
       <p>Start editing to see some magic happen :)</p>
       {/* If an image is uploaded, show the ImageEditor component */}
       <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center', padding: '20px' }}>
