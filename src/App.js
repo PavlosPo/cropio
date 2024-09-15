@@ -43,7 +43,7 @@ function App() {
       )}
       </div>
 
-      <AdsComponent dataAdSlot="3553125232"/>
+      <AdsComponent dataAdSlot="ca-pub-5898193160453953"/>
 
     </div>
 
