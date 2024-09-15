@@ -1,5 +1,5 @@
 onmessage = async (e) => {
-  const { arrayBuffer, type, maxDimension = 6000 } = e.data;
+  const { arrayBuffer, type, maxDimension = 4000 } = e.data;
 
   try {
     // Create a Blob from the received ArrayBuffer
