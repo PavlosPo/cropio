@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ImageEditor from './ImageEditor'; // Import the new component
 import ImageUploader from './ImageUploader'; // Import the new component
+import AdsComponent from './AdsComponent';
 import './App.css';
 
 function App() {
@@ -41,7 +42,12 @@ function App() {
         </>
       )}
       </div>
+
+      <AdsComponent dataAdSlot="3553125232"/>
+
     </div>
+
+    
   );
 }
 
