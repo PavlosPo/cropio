@@ -8,10 +8,10 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   const [paddingColor, setPaddingColor] = useState('white');
   const [borderColor, setBorderColor] = useState('black');
   const [inBetweenBorderPercnt, setBorderThickness] = useState(3); // Default 3%
-  // const [includeBorder, setIncludeBorder] = useState(false);
   const [extraPadding, setExtraPadding] = useState(30); // First stage padding in pixels
   const [includeExtraBorder, setIncludeExtraBorder] = useState(false); // Second stage border option
   const [isLoading, setIsLoading] = useState(false); // State to track loading
+  const [editorPaddingColor, setEditorPaddingColor] = useState('gray'); // Padding color for the editor box
 
   const onReshapeScaling = () => {
     setIsLoading(true); // Show loading spinner
@@ -85,7 +85,7 @@ const ImageEditor = ({ imageSrc, onReset }) => {
       finalCtx.drawImage(canvasWithBorder, xOffset, yOffset);
   
       // Save final image
-      const quality = 0.8; // Adjust the quality parameter as needed (0.1 to 1.0)
+      const quality = 1; // Adjust the quality parameter as needed (0.1 to 1.0)
       setScaledImageSrc(finalCanvas.toDataURL('image/jpeg', quality)); // Max quality for JPEG
       setIsLoading(false); // Hide loading spinner
     };
@@ -99,124 +99,164 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   };
 
   return (
-      <div style={{ textAlign: 'center', padding: '20px' }}>
-        {isLoading && <Loading />} {/* Show the loading spinner if isLoading is true */}
-        <h2>Image Editor</h2>
-        <div className='image-container'>
+    <div style={{ textAlign: 'center', padding: '20px' }}>
+      {isLoading && <Loading />} {/* Show the loading spinner if isLoading is true */}
+      <h2>Image Editor</h2>
+      {/* <div className='image-container'>
+        <img
+          src={scaledImageSrc || imageSrc}
+          alt="To be edited"
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            width: 'auto',
+            height: 'auto',
+            objectFit: 'contain',
+          }}
+        />
+      </div> */}
+
+      {/* New Box to Display the Scaled Image with Editor Padding */}
+      <div className='image-container' style={{
+        display: 'inline-block',
+        width: '600px',
+        height: '600px',
+        backgroundColor: editorPaddingColor,
+        position: 'relative',
+        margin: '20px auto',
+        overflow: 'hidden'
+      }}>
+        {scaledImageSrc && (
           <img
-            src={scaledImageSrc || imageSrc}
-            alt="To be edited"
+            src={scaledImageSrc}
+            alt="Scaled but with Padding"
             style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
               maxWidth: '100%',
               maxHeight: '100%',
-              width: 'auto',
-              height: 'auto',
               objectFit: 'contain',
             }}
           />
-        </div>
-        {/* Scale input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label>
-            X Scale:
-            <input
-              type="number"
-              value={xScale}
-              onChange={(e) => setXScale(Number(e.target.value))}
-              style={{ margin: '0 10px', width: '60px' }}
-              min="0.1"
-              step="0.1"
-            />
-          </label>
-          <label>
-            Y Scale:
-            <input
-              type="number"
-              value={yScale}
-              onChange={(e) => setYScale(Number(e.target.value))}
-              style={{ margin: '0 10px', width: '60px' }}
-              min="0.1"
-              step="0.1"
-            />
-          </label>
-        </div>
-
-        {/* First stage padding input */}
-        <div style={{ marginBottom: '20px' }}>
-          <label>
-            Extra Padding (px):
-            <input
-              type="number"
-              value={extraPadding}
-              onChange={(e) => setExtraPadding(Number(e.target.value))}
-              style={{ margin: '0 10px', width: '60px' }}
-              min="0"
-            />
-          </label>
-        </div>
-
-        {/* In-between border option */}
-        <div style={{ marginBottom: '20px' }}>
-          <label>
-            Include In-between Border:
-            <input
-              type="checkbox"
-              checked={includeExtraBorder}
-              onChange={() => setIncludeExtraBorder(!includeExtraBorder)}
-              style={{ margin: '0 10px' }}
-            />
-          </label>
-
-          {includeExtraBorder && (
-            <>
-              <label>
-                Border Percentage (%):
-                <input
-                  type="number"
-                  value={inBetweenBorderPercnt}
-                  onChange={(e) => setBorderThickness(Number(e.target.value))}
-                  style={{ margin: '0 10px', width: '60px' }}
-                  min="0"
-                  max="100"
-                />
-              </label>
-            </>
-          )}
-        </div>
-
-        {/* Color selectors */}
-        <div style={{ marginBottom: '20px' }}>
-          <label>
-            Padding Color:
-            <select
-              value={paddingColor}
-              onChange={(e) => setPaddingColor(e.target.value)}
-              style={{ margin: '0 10px' }}
-            >
-              <option value="white">White</option>
-              <option value="black">Black</option>
-            </select>
-          </label>
-          <label>
-            Border Color (First stage):
-            <select
-              value={borderColor}
-              onChange={(e) => setBorderColor(e.target.value)}
-              style={{ margin: '0 10px' }}
-            >
-              <option value="white">White</option>
-              <option value="black">Black</option>
-            </select>
-          </label>
-        </div>
-
-        <div>
-          <button onClick={onReshapeScaling} style={buttonStyle}>Reshape Scaling</button>
-          <button onClick={onSave} style={buttonStyle}>Save Image</button>
-          <button onClick={onReset} style={buttonStyle}>Reset</button>
-        </div>
+        )}
       </div>
 
+      {/* Scale input */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          X Scale:
+          <input
+            type="number"
+            value={xScale}
+            onChange={(e) => setXScale(Number(e.target.value))}
+            style={{ margin: '0 10px', width: '60px' }}
+            min="0.1"
+            step="0.1"
+          />
+        </label>
+        <label>
+          Y Scale:
+          <input
+            type="number"
+            value={yScale}
+            onChange={(e) => setYScale(Number(e.target.value))}
+            style={{ margin: '0 10px', width: '60px' }}
+            min="0.1"
+            step="0.1"
+          />
+        </label>
+      </div>
+
+      {/* First stage padding input */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          Extra Padding (px):
+          <input
+            type="number"
+            value={extraPadding}
+            onChange={(e) => setExtraPadding(Number(e.target.value))}
+            style={{ margin: '0 10px', width: '60px' }}
+            min="0"
+          />
+        </label>
+      </div>
+
+      {/* In-between border option */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          Include In-between Border:
+          <input
+            type="checkbox"
+            checked={includeExtraBorder}
+            onChange={() => setIncludeExtraBorder(!includeExtraBorder)}
+            style={{ margin: '0 10px' }}
+          />
+        </label>
+
+        {includeExtraBorder && (
+          <>
+            <label>
+              Border Percentage (%):
+              <input
+                type="number"
+                value={inBetweenBorderPercnt}
+                onChange={(e) => setBorderThickness(Number(e.target.value))}
+                style={{ margin: '0 10px', width: '60px' }}
+                min="0"
+                max="100"
+              />
+            </label>
+          </>
+        )}
+      </div>
+
+      {/* Color selectors */}
+      <div style={{ marginBottom: '20px' }}>
+        <label>
+          Padding Color:
+          <select
+            value={paddingColor}
+            onChange={(e) => setPaddingColor(e.target.value)}
+            style={{ margin: '0 10px' }}
+          >
+            <option value="white">White</option>
+            <option value="black">Black</option>
+          </select>
+        </label>
+        <label>
+          Border Color (First stage):
+          <select
+            value={borderColor}
+            onChange={(e) => setBorderColor(e.target.value)}
+            style={{ margin: '0 10px' }}
+          >
+            <option value="white">White</option>
+            <option value="black">Black</option>
+          </select>
+        </label>
+        <label>
+          Editor Padding Color:
+          <select
+            value={editorPaddingColor}
+            onChange={(e) => setEditorPaddingColor(e.target.value)}
+            style={{ margin: '0 10px' }}
+          >
+            <option value="magenta">Magenta</option>
+            <option value="cyan">Cyan</option>
+            <option value="yellow">Yellow</option>
+            <option value="gray">Gray</option>
+          </select>
+        </label>
+      </div>
+
+      <div>
+        <button onClick={onReshapeScaling} style={buttonStyle}>Reshape Scaling</button>
+        <button onClick={onSave} style={buttonStyle}>Save Image</button>
+        <button onClick={onReset} style={buttonStyle}>Reset</button>
+      </div>
+    </div>
   );
 };
 
