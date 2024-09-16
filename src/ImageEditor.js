@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Loading from './Loading'; // Import the Loading component
 
 const ImageEditor = ({ imageSrc, onReset }) => {
@@ -11,9 +11,9 @@ const ImageEditor = ({ imageSrc, onReset }) => {
   const [extraPadding, setExtraPadding] = useState(30); // First stage padding in pixels
   const [includeExtraBorder, setIncludeExtraBorder] = useState(false); // Second stage border option
   const [isLoading, setIsLoading] = useState(false); // State to track loading
-  const [editorPaddingColor, setEditorPaddingColor] = useState('gray'); // Padding color for the editor box
 
-  const onReshapeScaling = () => {
+  const applyInitialScaling = useCallback(() => {
+    if (!imageSrc) return;
     setIsLoading(true); // Show loading spinner
     const img = new Image();
     img.src = imageSrc;
@@ -89,6 +89,10 @@ const ImageEditor = ({ imageSrc, onReset }) => {
       setScaledImageSrc(finalCanvas.toDataURL('image/jpeg', quality)); // Max quality for JPEG
       setIsLoading(false); // Hide loading spinner
     };
+  }, [imageSrc, xScale, yScale, paddingColor, borderColor, inBetweenBorderPercnt, extraPadding, includeExtraBorder]);
+
+  const onReshapeScaling = () => {
+    applyInitialScaling();
   };
 
   const onSave = () => {
@@ -102,33 +106,12 @@ const ImageEditor = ({ imageSrc, onReset }) => {
     <div style={{ textAlign: 'center', padding: '20px' }}>
       {isLoading && <Loading />} {/* Show the loading spinner if isLoading is true */}
       <h2>Image Editor</h2>
-      {/* <div className='image-container'>
-        <img
-          src={scaledImageSrc || imageSrc}
-          alt="To be edited"
-          style={{
-            maxWidth: '100%',
-            maxHeight: '100%',
-            width: 'auto',
-            height: 'auto',
-            objectFit: 'contain',
-          }}
-        />
-      </div> */}
 
       {/* New Box to Display the Scaled Image with Editor Padding */}
-      <div className='image-container' style={{
-        display: 'inline-block',
-        width: '600px',
-        height: '600px',
-        backgroundColor: editorPaddingColor,
-        position: 'relative',
-        margin: '20px auto',
-        overflow: 'hidden'
-      }}>
-        {scaledImageSrc && (
+      <div className='image-container'>
+        {(scaledImageSrc || imageSrc) && (
           <img
-            src={scaledImageSrc}
+            src={scaledImageSrc || imageSrc}
             alt="Scaled but with Padding"
             style={{
               position: 'absolute',
@@ -236,38 +219,21 @@ const ImageEditor = ({ imageSrc, onReset }) => {
             <option value="black">Black</option>
           </select>
         </label>
-        <label>
-          Editor Padding Color:
-          <select
-            value={editorPaddingColor}
-            onChange={(e) => setEditorPaddingColor(e.target.value)}
-            style={{ margin: '0 10px' }}
-          >
-            <option value="magenta">Magenta</option>
-            <option value="cyan">Cyan</option>
-            <option value="yellow">Yellow</option>
-            <option value="gray">Gray</option>
-          </select>
-        </label>
       </div>
 
       <div>
-        <button onClick={onReshapeScaling} style={buttonStyle}>Reshape Scaling</button>
-        <button onClick={onSave} style={buttonStyle}>Save Image</button>
-        <button onClick={onReset} style={buttonStyle}>Reset</button>
+        <button onClick={onReshapeScaling} style={{ margin: '0 10px' }}>
+          Reshape Scaling
+        </button>
+        <button onClick={onSave} style={{ margin: '0 10px' }}>
+          Save Image
+        </button>
+        <button onClick={onReset} style={{ margin: '0 10px' }}>
+          Reset
+        </button>
       </div>
     </div>
   );
-};
-
-const buttonStyle = {
-  padding: '10px 20px',
-  margin: '10px',
-  backgroundColor: '#4CAF50',
-  color: 'white',
-  border: 'none',
-  borderRadius: '5px',
-  cursor: 'pointer'
 };
 
 export default ImageEditor;

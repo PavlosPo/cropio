@@ -39,16 +39,25 @@
 
 .image-container {
   margin-bottom: 20px;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 5cqw rgba(0, 0, 0, 0.5);
   max-width: 800px;
   max-height: 800px;
-  display: flex;
+  width: 600px;
+  height: 600px;
+  display: inline-block;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  background-color: #f0f0f0;
   position: relative;
-  box-sizing: border-box;
+  /* box-sizing: border-box; */
+
+  /* use the download image */
+  background-image: url("../public/images/motif.png"); 
+  /* Repeat the image */
+  background-repeat: repeat; 
+  /* Use the natural size of the image */
+  background-size: auto; 
+  margin: 20px auto;
 }
 
 .image-container img {
