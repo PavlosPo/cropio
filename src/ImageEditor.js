@@ -102,10 +102,19 @@ const ImageEditor = ({ imageSrc, onReset }) => {
       <div style={{ textAlign: 'center', padding: '20px' }}>
         {isLoading && <Loading />} {/* Show the loading spinner if isLoading is true */}
         <h2>Image Editor</h2>
-        <div className = "image-container">
-            <img src={scaledImageSrc || imageSrc} alt="To be edited" style={{maxWidth: '100%', maxHeight: '100%', objectFit: 'contain',}}/>  
+        <div className='image-container'>
+          <img
+            src={scaledImageSrc || imageSrc}
+            alt="To be edited"
+            style={{
+              maxWidth: '100%',
+              maxHeight: '100%',
+              width: 'auto',
+              height: 'auto',
+              objectFit: 'contain',
+            }}
+          />
         </div>
-
         {/* Scale input */}
         <div style={{ marginBottom: '20px' }}>
           <label>

@@ -51,6 +51,14 @@
   box-sizing: border-box;
 }
 
+.image-container img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
 p {
   /* make the text black */
   color: black;
