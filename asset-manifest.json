@@ -1,17 +1,18 @@
 {
   "files": {
-    "main.css": "/cropio/static/css/main.22095269.css",
-    "main.js": "/cropio/static/js/main.9c98b44e.js",
+    "main.css": "/cropio/static/css/main.27311494.css",
+    "main.js": "/cropio/static/js/main.21f1f2f4.js",
     "static/js/951.c0e6dbfd.chunk.js": "/cropio/static/js/951.c0e6dbfd.chunk.js",
     "static/js/453.44bc516d.chunk.js": "/cropio/static/js/453.44bc516d.chunk.js",
+    "static/media/motif.png": "/cropio/static/media/motif.d354998f38a749b9e11c.png",
     "index.html": "/cropio/index.html",
-    "main.22095269.css.map": "/cropio/static/css/main.22095269.css.map",
-    "main.9c98b44e.js.map": "/cropio/static/js/main.9c98b44e.js.map",
+    "main.27311494.css.map": "/cropio/static/css/main.27311494.css.map",
+    "main.21f1f2f4.js.map": "/cropio/static/js/main.21f1f2f4.js.map",
     "951.c0e6dbfd.chunk.js.map": "/cropio/static/js/951.c0e6dbfd.chunk.js.map",
     "453.44bc516d.chunk.js.map": "/cropio/static/js/453.44bc516d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.22095269.css",
-    "static/js/main.9c98b44e.js"
+    "static/css/main.27311494.css",
+    "static/js/main.21f1f2f4.js"
   ]
 }
